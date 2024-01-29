@@ -241,8 +241,8 @@ class Ui_MainWindow(object):
         self.comL.addItems(portList)
 
         for i, port in enumerate(portList):
-            com = self.menuPortList.addAction(str(port))
-            com.triggered.connect(self.onOpen)
+            comL = self.menuPortList.addAction(str(port))
+            comL.triggered.connect(self.onOpen)
             if i >= 2:
                 break
 
@@ -271,10 +271,11 @@ class Ui_MainWindow(object):
         self.comL.addItems(portlist)
         self.menuPortList.clear()
         for i, port in enumerate(portlist):
-            com = self.menuPortList.addAction(str(port))
-            com.triggered.connect(self.onOpen)
+            comL = self.menuPortList.addAction(str(port))
+            comL.triggered.connect(self.onOpen)
             if i >= 2:
                 break
+
     def onOpen(self):
         self.serial.setPortName(self.comL.currentText())
         self.serial.open(QIODevice.ReadWrite)
