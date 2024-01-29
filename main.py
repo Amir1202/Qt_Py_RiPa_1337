@@ -232,6 +232,14 @@ class Ui_MainWindow(object):
         self.actionClosePort.setText(_translate("MainWindow", "ClosePort"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
 
+# ____________________________________________________Для того, чтобы всё работало____________________________________________________#
+#         from PyQt5.QtGui import *
+#         from PyQt5.QtWidgets import *
+#         from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
+#         from PyQt5.QtCore import *
+#         import cv2
+#         from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
+#         from PyQt5 import QtCore, QtGui, QtWidgets
 
         self.serial = QSerialPort()
         self.serial.setBaudRate(115200)
