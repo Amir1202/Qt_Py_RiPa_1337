@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\amire\PycharmProjects\QTARDPYT\QTdes.ui'
+# Form implementation generated from reading ui file 'C:\Users\amire\PycharmProjects\QTARDPYT\GoodNessMain.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
@@ -17,6 +16,7 @@ from PyQt5.QtCore import *
 import cv2
 from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 
 class Ui_MainWindow(object):
@@ -80,6 +80,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.QR_Forward = QtWidgets.QRadioButton(self.centralwidget)
         self.QR_Forward.setMaximumSize(QtCore.QSize(60, 13))
+        self.QR_Forward.setStyleSheet("border-color: rgb(85, 255, 0);")
         self.QR_Forward.setObjectName("QR_Forward")
         self.verticalLayout_3.addWidget(self.QR_Forward)
         self.QR_Stop = QtWidgets.QRadioButton(self.centralwidget)
@@ -233,6 +234,15 @@ class Ui_MainWindow(object):
         self.actionReset.setText(_translate("MainWindow", "Reset"))
 
 
+# ____________________________________________________Для того, чтобы всё работало____________________________________________________#
+#         from PyQt5.QtGui import *
+#         from PyQt5.QtWidgets import *
+#         from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
+#         from PyQt5.QtCore import *
+#         import cv2
+#         from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
+#         from PyQt5 import QtCore, QtGui, QtWidgets
+
         self.serial = QSerialPort()
         self.serial.setBaudRate(115200)
         self.serial.readyRead.connect(self.onRead)  #Сигнал readyRead, который вызывается когда SerialPort, что-то на приёмку.
@@ -249,9 +259,14 @@ class Ui_MainWindow(object):
             if i >= 2:
                 break
 
-        self.speedSlider.valueChanged.connect(self.defSpeed)
-        self.servoSlider.valueChanged.connect(self.defServo)
+        self.speedSlider.valueChanged.connect(self.dSpeed)
+        self.servoSlider.valueChanged.connect(self.dServo)
         self.ledC.stateChanged.connect(self.ledControl)
+
+        self.QR_Forward.clicked.connect(self.dFORWARD)
+        self.QR_Stop.clicked.connect(self.dSTOP)
+        self.QR_Back.clicked.connect(self.dBACKWARD)
+
 
         self.actionOpenPort.triggered.connect(self.onOpen)
         self.actionClosePort.triggered.connect(self.onClose)
@@ -298,14 +313,27 @@ class Ui_MainWindow(object):
     def ledControl(self, val):
         if val == 2: val = 1;
         self.serialSend([0, val])
-    def defSpeed(self, val):
+    def dSpeed(self, val):
         self.serialSend([1, self.speedSlider.value()])
         print(val)
-    def defServo(self, val):
+    def dServo(self, val):
         self.serialSend([2, self.servoSlider.value()])
         print(val)
+
+# ----------------------------Кнопки---------------------------- #
+
+    def dFORWARD(self, val):
+        self.serialSend([3])
+    def dSTOP(self, val):
+        self.serialSend([4])
+    def dBACKWARD(self, val):
+        self.serialSend([5])
+
+# ----------------------------Кнопки---------------------------- #
+
     def ImageUpdateSlot(self, Image):
         self.QTcamera.setPixmap(QPixmap.fromImage(Image))
+
 
 class Worker1(QThread):
     ImageUpdate = pyqtSignal(QImage)
@@ -330,6 +358,7 @@ class Worker1(QThread):
         self.ThreadActive = False
         self.quit()
     # ____________________________________________________Для того, чтобы всё работало____________________________________________________#
+
 
 if __name__ == "__main__":
     import sys
