@@ -3,10 +3,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
 from PyQt5.QtCore import *
-import cv2
 from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import cv2
+import math
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -230,21 +230,33 @@ class Ui_MainWindow(object):
 #         from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 #         from PyQt5 import QtCore, QtGui, QtWidgets
 
+# ----------------- Настройка для Serial Port ----------------- #
+
         self.serial = QSerialPort()
         self.serial.setBaudRate(115200)
         self.serial.readyRead.connect(self.onRead)  #Сигнал readyRead, который вызывается когда SerialPort, что-то на приёмку.
 
+# ----------------- Настройка для Serial Port ----------------- #
+
+        # ----- Добавляем список портов в ComboBox ----- #
         portList = []
         ports = QSerialPortInfo().availablePorts()
         for port in ports:
             portList.append(port.portName())
         self.comL.addItems(portList)
+        # ---------------------------------------------- #
 
+        # ----- Добавляем список портов в Settings > MenuPortList ----- #
         for i, port in enumerate(portList):
             comL = self.menuPortList.addAction(str(port))
             comL.triggered.connect(self.onOpen)
             if i >= 2:
                 break
+
+        self.actionOpenPort.triggered.connect(self.onOpen)
+        self.actionClosePort.triggered.connect(self.onClose)
+        self.actionReset.triggered.connect(self.onReset)
+        # ---------------------------------------------- #
 
         self.speedSlider.valueChanged.connect(self.dSpeed)
         self.servoSlider.valueChanged.connect(self.dServo)
@@ -254,14 +266,12 @@ class Ui_MainWindow(object):
         self.QR_Stop.clicked.connect(self.dSTOP)
         self.QR_Back.clicked.connect(self.dBACKWARD)
 
-
-        self.actionOpenPort.triggered.connect(self.onOpen)
-        self.actionClosePort.triggered.connect(self.onClose)
-        self.actionReset.triggered.connect(self.onReset)
-
         self.Worker1 = Worker1()
         self.Worker1.start()
         self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
+
+
+
     def onReset(self):
         portlist = []
         ports = QSerialPortInfo().availablePorts()
@@ -325,23 +335,82 @@ class Ui_MainWindow(object):
 
 class Worker1(QThread):
     ImageUpdate = pyqtSignal(QImage)
+
     def run(self):
         self.ThreadActive = True
         Capture = cv2.VideoCapture(0)
+
         while self.ThreadActive:
-            ret, frame = Capture.read()
-            if ret:
-                Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                ConvertToQtFormat = QImage(Image.data, Image.shape[1], Image.shape[0], QImage.Format_RGB888)
-                Pic = ConvertToQtFormat.scaled(1300, 1000, Qt.KeepAspectRatio)
+            iSee = False
+            controlXY = 0
+            success, frame = Capture.read()
+            if success:
+                height, width = frame.shape[0:2]
+                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                binary = cv2.inRange(hsv, (0, 100, 250), (20, 255, 255))
+
+                roi = cv2.bitwise_and(frame, frame, mask=binary)
+                contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                if len(contours) != 0:
+                    maxcont = max(contours, key=cv2.contourArea)
+                    moments = cv2.moments(maxcont)
+                    if moments["m00"] > 20:
+                        cx = int(moments["m10"] / moments["m00"])
+                        cy = int(moments["m01"] / moments["m00"])
+                        iSee = True
+                        controlXY = 510 * (cx - width / 2) / width
+                        controlXY = controlXY * 1
+                        cv2.drawContours(frame, maxcont, -1, (0, 255, 0), 2)
+                        cv2.line(frame, (cx, 0), (cx, height), (0, 0, 255), 6)
+                        cv2.line(frame, (0, cy), (width, cy), (0, 255, 0), 6)
+                cv2.putText(frame, 'iSee: {};'.format(iSee), (width - 370, height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.4,
+                            (255, 0, 0), 1, cv2.LINE_AA)
+                cv2.putText(frame, 'controlX: {:.2f}'.format(controlXY), (width - 200, height - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1, cv2.LINE_AA)
+                controlXY = int(controlXY)
+                # print(controlXY)
+                # controlXY = str((list(map(abs, controlXY))))
+                # controlXY = contorlXY.replace("[", "").replace("]", "")
+
+
+
+                def ControlServo_Color(self, controlXY):
+                    if iSee == True:
+                        self.main_window.serialSend([2, controlXY])
+                    print(controlXY)
+
+
+
+
+
+                # def ControlServo_Color(controlXY):
+                #     if iSee == True:
+                #         self.serialSend([2, controlXY])
+                #     print(controlXY)
+
+                # --- Для отображение на QLabel --- #
+
+                ConvertToQtFormat = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_BGR888)
+                Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
-            # if ret:
-            #     Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            #     FlippedImage = cv2.flip(Image, 1)
-            #     ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0],
-            #                                QImage.Format_RGB888)
-            #     Pic = ConvertToQtFormat.scaled(1300, 1000, Qt.KeepAspectRatio)
-            #     self.ImageUpdate.emit(Pic)
+
+                # --- Для отображение на QLabel --- #
+
+
+
+# -----Без выделение цветов----- #
+
+        # while self.ThreadActive:
+        #     ret, frame = Capture.read()
+        #     if ret:
+        #         Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #         ConvertToQtFormat = QImage(Image.data, Image.shape[1], Image.shape[0], QImage.Format_RGB888)
+        #         Pic = ConvertToQtFormat.scaled(1200, 800, Qt.KeepAspectRatio)
+        #         self.ImageUpdate.emit(Pic)
+
+# -----Без выделение цветов----- #
+
+
     def stop(self):
         self.ThreadActive = False
         self.quit()
