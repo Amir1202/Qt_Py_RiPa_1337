@@ -8,6 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import cv2
 import math
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -18,6 +19,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+
         self.horizontalLayout.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.line = QtWidgets.QFrame(self.centralwidget)
@@ -27,14 +29,14 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.line)
         self.QTcamera = QtWidgets.QLabel(self.centralwidget)
         self.QTcamera.setStyleSheet("\n"
-"QLabel{\n"
-"border: 2px solid rgb(0, 85, 127);\n"
-"border-radius: 4px;\n"
-"padding: 2px;\n"
-"background-color:rgb(37, 37, 56);\n"
-"color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.00568182 rgba(255, 194, 0, 255), stop:1 rgba(255, 238, 97, 252));\n"
-"font: 16pt \"Impact\";\n"
-"}")
+                                    "QLabel{\n"
+                                    "border: 2px solid rgb(0, 85, 127);\n"
+                                    "border-radius: 4px;\n"
+                                    "padding: 2px;\n"
+                                    "background-color:rgb(37, 37, 56);\n"
+                                    "color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.00568182 rgba(255, 194, 0, 255), stop:1 rgba(255, 238, 97, 252));\n"
+                                    "font: 16pt \"Impact\";\n"
+                                    "}")
         self.QTcamera.setAlignment(QtCore.Qt.AlignCenter)
         self.QTcamera.setObjectName("QTcamera")
         self.horizontalLayout.addWidget(self.QTcamera)
@@ -53,8 +55,8 @@ class Ui_MainWindow(object):
         self.lcdNumber_8 = QtWidgets.QLCDNumber(self.centralwidget)
         self.lcdNumber_8.setMaximumSize(QtCore.QSize(16777215, 1200))
         self.lcdNumber_8.setStyleSheet("\n"
-"QLCDNumber{background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,\n"
-"stop:0.0284091 rgba(255, 0, 79, 255), stop:1 rgba(255, 124, 55, 252)); color: rgb(255, 255, 255);}")
+                                       "QLCDNumber{background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,\n"
+                                       "stop:0.0284091 rgba(255, 0, 79, 255), stop:1 rgba(255, 124, 55, 252)); color: rgb(255, 255, 255);}")
         self.lcdNumber_8.setObjectName("lcdNumber_8")
         self.verticalLayout_2.addWidget(self.lcdNumber_8)
         self.line_3 = QtWidgets.QFrame(self.centralwidget)
@@ -81,14 +83,15 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.QR_Back)
         self.horizontalLayout_5.addLayout(self.verticalLayout_3)
         self.speedSlider = QtWidgets.QSlider(self.centralwidget)
-        self.speedSlider.setStyleSheet("QSlider::groove:vertical { background: blue; position: absolute; left: 0px; right: 0px; border-radius: 4px;}\n"
-"QSlider::handle:vertical {\n"
-"background:#880000;\n"
-"width: 12px;\n"
-"margin: -10px -10px;\n"
-"}\n"
-"QSlider::add-page:vertical { background: red;}\n"
-"QSlider::sub-page:vertical {background: white;}")
+        self.speedSlider.setStyleSheet(
+            "QSlider::groove:vertical { background: blue; position: absolute; left: 0px; right: 0px; border-radius: 4px;}\n"
+            "QSlider::handle:vertical {\n"
+            "background:#880000;\n"
+            "width: 12px;\n"
+            "margin: -10px -10px;\n"
+            "}\n"
+            "QSlider::add-page:vertical { background: red;}\n"
+            "QSlider::sub-page:vertical {background: white;}")
         self.speedSlider.setMinimum(800)
         self.speedSlider.setMaximum(1700)
         self.speedSlider.setPageStep(1)
@@ -109,11 +112,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.servoSlider = QtWidgets.QSlider(self.centralwidget)
         self.servoSlider.setStyleSheet("\n"
-"QSlider::groove:horizontal {background: white; position: absolute; left: 10px; right: 10px;}\n"
-"QSlider::handle:horizontal {height: 10px; background: black; margin: 0 -10px; /* расширяется наружу от бороздки */ }")
-        self.servoSlider.setMaximum(180)
+                                       "QSlider::groove:horizontal {background: white; position: absolute; left: 10px; right: 10px;}\n"
+                                       "QSlider::handle:horizontal {height: 10px; background: black; margin: 0 -10px; /* расширяется наружу от бороздки */ }")
+        self.servoSlider.setMinimum(0)
+        self.servoSlider.setMaximum(90)
         self.servoSlider.setPageStep(1)
-        self.servoSlider.setSliderPosition(90)
+        self.servoSlider.setSliderPosition(45)
         self.servoSlider.setOrientation(QtCore.Qt.Horizontal)
         self.servoSlider.setObjectName("servoSlider")
         self.horizontalLayout_4.addWidget(self.servoSlider)
@@ -122,8 +126,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.lcdNumber_7 = QtWidgets.QLCDNumber(self.centralwidget)
         self.lcdNumber_7.setStyleSheet("\n"
-"QLCDNumber{background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,\n"
-"stop:0.0284091 rgba(255, 0, 79, 255), stop:1 rgba(255, 124, 55, 252)); color: rgb(255, 255, 255);}")
+                                       "QLCDNumber{background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,\n"
+                                       "stop:0.0284091 rgba(255, 0, 79, 255), stop:1 rgba(255, 124, 55, 252)); color: rgb(255, 255, 255);}")
         self.lcdNumber_7.setObjectName("lcdNumber_7")
         self.verticalLayout_9.addWidget(self.lcdNumber_7)
         self.horizontalLayout_4.addLayout(self.verticalLayout_9)
@@ -145,8 +149,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName("verticalLayout_7")
         self.TextTemp = QtWidgets.QLabel(self.centralwidget)
         self.TextTemp.setStyleSheet("\n"
-"font: 8pt \"Portico Light\";\n"
-"color: rgb(0, 85, 255);")
+                                    "font: 8pt \"Portico Light\";\n"
+                                    "color: rgb(0, 85, 255);")
         self.TextTemp.setObjectName("TextTemp")
         self.verticalLayout_7.addWidget(self.TextTemp)
         self.temperaturL01 = QtWidgets.QLCDNumber(self.centralwidget)
@@ -163,8 +167,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.TextBLara = QtWidgets.QLabel(self.centralwidget)
         self.TextBLara.setStyleSheet("\n"
-"font: 8pt \"Portico Light\";\n"
-"color: rgb(0, 85, 255);")
+                                     "font: 8pt \"Portico Light\";\n"
+                                     "color: rgb(0, 85, 255);")
         self.TextBLara.setObjectName("TextBLara")
         self.verticalLayout_8.addWidget(self.TextBLara)
         self.wetL01 = QtWidgets.QLCDNumber(self.centralwidget)
@@ -202,8 +206,8 @@ class Ui_MainWindow(object):
         self.menuBar.addAction(self.menuSetting.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.servoSlider.valueChanged['int'].connect(self.lcdNumber_7.display) # type: ignore
-        self.speedSlider.valueChanged['int'].connect(self.lcdNumber_8.display) # type: ignore
+        self.servoSlider.valueChanged['int'].connect(self.lcdNumber_7.display)  # type: ignore
+        self.speedSlider.valueChanged['int'].connect(self.lcdNumber_8.display)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -221,22 +225,23 @@ class Ui_MainWindow(object):
         self.actionClosePort.setText(_translate("MainWindow", "ClosePort"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
 
-# ____________________________________________________Для того, чтобы всё работало____________________________________________________#
-#         from PyQt5.QtGui import *
-#         from PyQt5.QtWidgets import *
-#         from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
-#         from PyQt5.QtCore import *
-#         import cv2
-#         from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
-#         from PyQt5 import QtCore, QtGui, QtWidgets
+        # ____________________________________________________Для того, чтобы всё работало____________________________________________________#
+        #         from PyQt5.QtGui import *
+        #         from PyQt5.QtWidgets import *
+        #         from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
+        #         from PyQt5.QtCore import *
+        #         import cv2
+        #         from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
+        #         from PyQt5 import QtCore, QtGui, QtWidgets
 
-# ----------------- Настройка для Serial Port ----------------- #
+        # ----------------- Настройка для Serial Port ----------------- #
 
         self.serial = QSerialPort()
         self.serial.setBaudRate(115200)
-        self.serial.readyRead.connect(self.onRead)  #Сигнал readyRead, который вызывается когда SerialPort, что-то на приёмку.
+        self.serial.readyRead.connect(
+            self.onRead)  # Сигнал readyRead, который вызывается когда SerialPort, что-то на приёмку.
 
-# ----------------- Настройка для Serial Port ----------------- #
+        # ----------------- Настройка для Serial Port ----------------- #
 
         # ----- Добавляем список портов в ComboBox ----- #
         portList = []
@@ -252,6 +257,7 @@ class Ui_MainWindow(object):
             comL.triggered.connect(self.onOpen)
             if i >= 2:
                 break
+        # ------------------------------------------------------------- #
 
         self.actionOpenPort.triggered.connect(self.onOpen)
         self.actionClosePort.triggered.connect(self.onClose)
@@ -266,11 +272,13 @@ class Ui_MainWindow(object):
         self.QR_Stop.clicked.connect(self.dSTOP)
         self.QR_Back.clicked.connect(self.dBACKWARD)
 
+        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #
+
         self.Worker1 = Worker1()
         self.Worker1.start()
         self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
 
-
+        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #        # --- ООП --- #
 
     def onReset(self):
         portlist = []
@@ -289,8 +297,11 @@ class Ui_MainWindow(object):
     def onOpen(self):
         self.serial.setPortName(self.comL.currentText())
         self.serial.open(QIODevice.ReadWrite)
+
     def onClose(self):
         self.serial.close()
+
+    # --------Функция для получение данных через Serial > выводим полученные данные на дисплей-------- #
     def onRead(self):
         if not self.serial.canReadLine():
             return
@@ -300,6 +311,10 @@ class Ui_MainWindow(object):
         if data[0] == '0':
             self.temperaturL01.display(data[1])
             self.temperaturL02.display(data[2])
+
+    # --------Функция для получение данных через Serial > выводим полученные данные на дисплей-------- #
+
+    # --------Функция для отправки данных на Serial -------- #
     def serialSend(self, data):
         txs = ""
         for val in data:
@@ -308,26 +323,36 @@ class Ui_MainWindow(object):
         txs = txs[:-1]
         txs += ';'
         self.serial.write(txs.encode())
+
+    # --------Функция для отправки данных на Serial -------- #
+
     def ledControl(self, val):
         if val == 2: val = 1;
         self.serialSend([0, val])
+        print(val)
+
+    # ----------Ползунки---------- #
     def dSpeed(self, val):
         self.serialSend([1, self.speedSlider.value()])
         print(val)
+
     def dServo(self, val):
         self.serialSend([2, self.servoSlider.value()])
         print(val)
 
-# ----------------------------Кнопки---------------------------- #
+    # ----------Ползунки---------- #
 
+    # ------------------Кнопки------------------ #
     def dFORWARD(self, val):
         self.serialSend([3])
+
     def dSTOP(self, val):
         self.serialSend([4])
+
     def dBACKWARD(self, val):
         self.serialSend([5])
 
-# ----------------------------Кнопки---------------------------- #
+    # ------------------Кнопки------------------ #
 
     def ImageUpdateSlot(self, Image):
         self.QTcamera.setPixmap(QPixmap.fromImage(Image))
@@ -348,7 +373,6 @@ class Worker1(QThread):
                 height, width = frame.shape[0:2]
                 hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
                 binary = cv2.inRange(hsv, (0, 100, 250), (20, 255, 255))
-
                 roi = cv2.bitwise_and(frame, frame, mask=binary)
                 contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
                 if len(contours) != 0:
@@ -368,56 +392,44 @@ class Worker1(QThread):
                 cv2.putText(frame, 'controlX: {:.2f}'.format(controlXY), (width - 200, height - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1, cv2.LINE_AA)
                 controlXY = int(controlXY)
-                # print(controlXY)
-                # controlXY = str((list(map(abs, controlXY))))
-                # controlXY = contorlXY.replace("[", "").replace("]", "")
-
-
-
-                def ControlServo_Color(self, controlXY):
-                    if iSee == True:
-                        self.main_window.serialSend([2, controlXY])
-                    print(controlXY)
-
-
-
-
-
-                # def ControlServo_Color(controlXY):
-                #     if iSee == True:
-                #         self.serialSend([2, controlXY])
-                #     print(controlXY)
 
                 # --- Для отображение на QLabel --- #
-
                 ConvertToQtFormat = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_BGR888)
                 Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
-
                 # --- Для отображение на QLabel --- #
 
 
-
+# -----Без выделение цветов----- #
+# while self.ThreadActive:
+#     ret, frame = Capture.read()
+#     if ret:
+#         Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#         ConvertToQtFormat = QImage(Image.data, Image.shape[1], Image.shape[0], QImage.Format_RGB888)
+#         Pic = ConvertToQtFormat.scaled(1200, 800, Qt.KeepAspectRatio)
+#         self.ImageUpdate.emit(Pic)
 # -----Без выделение цветов----- #
 
-        # while self.ThreadActive:
-        #     ret, frame = Capture.read()
-        #     if ret:
-        #         Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        #         ConvertToQtFormat = QImage(Image.data, Image.shape[1], Image.shape[0], QImage.Format_RGB888)
-        #         Pic = ConvertToQtFormat.scaled(1200, 800, Qt.KeepAspectRatio)
-        #         self.ImageUpdate.emit(Pic)
-
-# -----Без выделение цветов----- #
+def stop(self):
+    self.ThreadActive = False
+    self.quit()
 
 
-    def stop(self):
-        self.ThreadActive = False
-        self.quit()
-    # ____________________________________________________Для того, чтобы всё работало____________________________________________________#
+# class ASDDD(Ui_MainWindow,Worker1):
+#     ui = Ui_MainWindow()  # Создаем экземпляр класса Ui_MainWindow
+#     worker = Worker1(ui)
+#     def __init__(self, Worker1):
+#         self.worker = Worker1()  # Сохраняем ссылку на родительский объект
+#         self.worker.Ret_CXY()
+#     def someMethod(self):
+#         self.parent.serialSend(Ret_CXY)  # Вызываем метод родительского класса и передаем значение controlXY
 
+
+
+# ____________________________________________________Для того, чтобы всё работало____________________________________________________#
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
