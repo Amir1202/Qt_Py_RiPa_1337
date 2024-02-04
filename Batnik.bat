@@ -1,1 +1,0 @@
-pyuic5.exe -x C:\Users\amire\PycharmProjects\QTARDPYT\GoodNessMain.ui -o C:\Users\amire\PycharmProjects\QTARDPYT\GoodNessMain.py

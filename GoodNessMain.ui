@@ -40,9 +40,19 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="QTcamera">
-        <property name="styleSheet">
-         <string notr="true">
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>Tab 1</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="QTcamera">
+            <property name="styleSheet">
+             <string notr="true">
 QLabel{
 border: 2px solid rgb(0, 85, 127);
 border-radius: 4px;
@@ -51,13 +61,27 @@ background-color:rgb(37, 37, 56);
 color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.00568182 rgba(255, 194, 0, 255), stop:1 rgba(255, 238, 97, 252));
 font: 16pt &quot;Impact&quot;;
 }</string>
-        </property>
-        <property name="text">
-         <string>Загрузка...</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
+            </property>
+            <property name="text">
+             <string>Загрузка...</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QWidget" name="QmapForMe" native="true"/>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
       <item>

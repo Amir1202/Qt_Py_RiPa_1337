@@ -9,14 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
-from PyQt5.QtCore import *
-import cv2
-from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
-from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 
 class Ui_MainWindow(object):
@@ -36,7 +28,13 @@ class Ui_MainWindow(object):
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.horizontalLayout.addWidget(self.line)
-        self.QTcamera = QtWidgets.QLabel(self.centralwidget)
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.gridLayout = QtWidgets.QGridLayout(self.tab)
+        self.gridLayout.setObjectName("gridLayout")
+        self.QTcamera = QtWidgets.QLabel(self.tab)
         self.QTcamera.setStyleSheet("\n"
 "QLabel{\n"
 "border: 2px solid rgb(0, 85, 127);\n"
@@ -48,7 +46,17 @@ class Ui_MainWindow(object):
 "}")
         self.QTcamera.setAlignment(QtCore.Qt.AlignCenter)
         self.QTcamera.setObjectName("QTcamera")
-        self.horizontalLayout.addWidget(self.QTcamera)
+        self.gridLayout.addWidget(self.QTcamera, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.tab_2)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.QmapForMe = QtWidgets.QWidget(self.tab_2)
+        self.QmapForMe.setObjectName("QmapForMe")
+        self.gridLayout_2.addWidget(self.QmapForMe, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.tab_2, "")
+        self.horizontalLayout.addWidget(self.tabWidget)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
         self.line_2.setFrameShape(QtWidgets.QFrame.VLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -214,6 +222,7 @@ class Ui_MainWindow(object):
         self.menuBar.addAction(self.menuSetting.menuAction())
 
         self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(0)
         self.servoSlider.valueChanged['int'].connect(self.lcdNumber_7.display) # type: ignore
         self.speedSlider.valueChanged['int'].connect(self.lcdNumber_8.display) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -222,6 +231,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.QTcamera.setText(_translate("MainWindow", "Загрузка..."))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.QR_Forward.setText(_translate("MainWindow", "Вперёд"))
         self.QR_Stop.setText(_translate("MainWindow", "СТОП"))
         self.QR_Back.setText(_translate("MainWindow", "Назад"))
@@ -232,132 +243,6 @@ class Ui_MainWindow(object):
         self.actionOpenPort.setText(_translate("MainWindow", "OpenPort"))
         self.actionClosePort.setText(_translate("MainWindow", "ClosePort"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
-
-
-# ____________________________________________________Для того, чтобы всё работало____________________________________________________#
-#         from PyQt5.QtGui import *
-#         from PyQt5.QtWidgets import *
-#         from PyQt5.QtWidgets import QMainWindow, QMenuBar, QAction, QMenu
-#         from PyQt5.QtCore import *
-#         import cv2
-#         from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
-#         from PyQt5 import QtCore, QtGui, QtWidgets
-
-        self.serial = QSerialPort()
-        self.serial.setBaudRate(115200)
-        self.serial.readyRead.connect(self.onRead)  #Сигнал readyRead, который вызывается когда SerialPort, что-то на приёмку.
-
-        portList = []
-        ports = QSerialPortInfo().availablePorts()
-        for port in ports:
-            portList.append(port.portName())
-        self.comL.addItems(portList)
-
-        for i, port in enumerate(portList):
-            com = self.menuPortList.addAction(str(port))
-            com.triggered.connect(self.onOpen)
-            if i >= 2:
-                break
-
-        self.speedSlider.valueChanged.connect(self.dSpeed)
-        self.servoSlider.valueChanged.connect(self.dServo)
-        self.ledC.stateChanged.connect(self.ledControl)
-
-        self.QR_Forward.clicked.connect(self.dFORWARD)
-        self.QR_Stop.clicked.connect(self.dSTOP)
-        self.QR_Back.clicked.connect(self.dBACKWARD)
-
-
-        self.actionOpenPort.triggered.connect(self.onOpen)
-        self.actionClosePort.triggered.connect(self.onClose)
-        self.actionReset.triggered.connect(self.onReset)
-
-        self.Worker1 = Worker1()
-        self.Worker1.start()
-        self.Worker1.ImageUpdate.connect(self.ImageUpdateSlot)
-    def onReset(self):
-        portlist = []
-        ports = QSerialPortInfo().availablePorts()
-        for port in ports:
-            portlist.append(port.portName())
-        self.comL.clear()
-        self.comL.addItems(portlist)
-        self.menuPortList.clear()
-        for i, port in enumerate(portlist):
-            com = self.menuPortList.addAction(str(port))
-            com.triggered.connect(self.onOpen)
-            if i >= 2:
-                break
-    def onOpen(self):
-        self.serial.setPortName(self.comL.currentText())
-        self.serial.open(QIODevice.ReadWrite)
-    def onClose(self):
-        self.serial.close()
-    def onRead(self):
-        if not self.serial.canReadLine():
-            return
-        rx = self.serial.readLine()
-        rxs = str(rx, 'utf-8').strip()
-        data = rxs.split(',')
-        if data[0] == '0':
-            self.temperaturL01.display(data[1])
-            self.temperaturL02.display(data[2])
-    def serialSend(self, data):
-        txs = ""
-        for val in data:
-            txs += str(val)
-            txs += ','
-        txs = txs[:-1]
-        txs += ';'
-        self.serial.write(txs.encode())
-    def ledControl(self, val):
-        if val == 2: val = 1;
-        self.serialSend([0, val])
-    def dSpeed(self, val):
-        self.serialSend([1, self.speedSlider.value()])
-        print(val)
-    def dServo(self, val):
-        self.serialSend([2, self.servoSlider.value()])
-        print(val)
-
-# ----------------------------Кнопки---------------------------- #
-
-    def dFORWARD(self, val):
-        self.serialSend([3])
-    def dSTOP(self, val):
-        self.serialSend([4])
-    def dBACKWARD(self, val):
-        self.serialSend([5])
-
-# ----------------------------Кнопки---------------------------- #
-
-    def ImageUpdateSlot(self, Image):
-        self.QTcamera.setPixmap(QPixmap.fromImage(Image))
-
-
-class Worker1(QThread):
-    ImageUpdate = pyqtSignal(QImage)
-    def run(self):
-        self.ThreadActive = True
-        Capture = cv2.VideoCapture(0)
-        while self.ThreadActive:
-            ret, frame = Capture.read()
-            if ret:
-                Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                ConvertToQtFormat = QImage(Image.data, Image.shape[1], Image.shape[0], QImage.Format_RGB888)
-                Pic = ConvertToQtFormat.scaled(1300, 1000, Qt.KeepAspectRatio)
-                self.ImageUpdate.emit(Pic)
-            # if ret:
-            #     Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            #     FlippedImage = cv2.flip(Image, 1)
-            #     ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0],
-            #                                QImage.Format_RGB888)
-            #     Pic = ConvertToQtFormat.scaled(1300, 1000, Qt.KeepAspectRatio)
-            #     self.ImageUpdate.emit(Pic)
-    def stop(self):
-        self.ThreadActive = False
-        self.quit()
-    # ____________________________________________________Для того, чтобы всё работало____________________________________________________#
 
 
 if __name__ == "__main__":
