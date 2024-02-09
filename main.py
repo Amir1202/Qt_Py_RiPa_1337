@@ -1,5 +1,4 @@
 from GoodNessMain import *
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -14,22 +13,10 @@ import math
 class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        print(f"Инициализация класса {self.__class__}")
         self.setupUi(self)
-
         self.Worker = Worker1()
         self.Worker.start()
         self.Worker.ImageUpdate.connect(self.ImageUpdateSlot)
-
-        # self.Worker.ControlXYUpdate.connect(self.serialSend)
-        # self.serialSend(self.Worker.ContrColor)
-
-        # self.Worker.ContrColor()
-        # self.Worker.controlXY(self.serialSend)
-
-        # self.Worker.controlServo_Color.connect(self.serialSend()) #ПИ!! БЛь
-        # ПИ!! Бь self.Worker.colorSend()#ПИ!! БЛь
-
         # ----------------- Настройка для Serial Port ----------------- #
         self.serial = QSerialPort()
         self.serial.setBaudRate(115200)
@@ -97,13 +84,12 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # --------Функция для отправки данных на Serial -------- #
     def serialSend(self, data):
-        txs = ""
-        for val in data:
-            txs += str(val)
-            txs += ','
-        txs = txs[:-1]
-        txs += ';'
+        txs = ','.join(map(str, data)) + ';'
         self.serial.write(txs.encode())
+        # 1. map(str, data) применяет функцию str к каждому элементу в списке data, преобразуя его в строковую форму.
+        # 2. ','.join(...) объединяет преобразованные элементы списка data в одну строку, разделяя их запятой.
+        # Результат этого шага будет строкой вида "элемент1,элемент2,элемент3".
+        # 3. '+' конкатенирует полученную строку с символом ;. Результат будет строкой с добавленным символом ; в конце.
     # ------------------------------------------------------- #
 
     def ledControl(self, val):
@@ -204,6 +190,7 @@ if __name__ == "__main__":
     print(issubclass(Worker1, QThread)) #True
     print(issubclass(SendColor, Worker1)) #True SendColor наследуется атрибуты от Worker
     print(issubclass(SendColor, CustomMainWindow)) # True SendColor наследуется от CustomMainWindow
+    print(issubclass(Worker1, CustomMainWindow)) # True SendColor наследуется от CustomMainWindow
 
     mainWindow.show()
     sys.exit(app.exec_())
