@@ -59,8 +59,6 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         for i, port in enumerate(portlist):
             comL = self.menuPortList.addAction(str(port))
             comL.triggered.connect(self.onOpen)
-            if i >= 2:
-                break
 
     def onOpen(self):
         self.serial.setPortName(self.comL.currentText())
