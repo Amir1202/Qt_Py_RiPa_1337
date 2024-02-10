@@ -124,6 +124,8 @@ class Worker1(QThread):
         self.controlXY = 0
         print(f"Инициализация класса {self.__class__}")
 
+
+
     def run(self):
         self.ThreadActive = True
         Capture = cv2.VideoCapture(0)
@@ -153,14 +155,10 @@ class Worker1(QThread):
                             (255, 0, 0), 1, cv2.LINE_AA)
                 cv2.putText(frame, 'controlX: {:.2f}'.format(controlXY), (width - 200, height - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1, cv2.LINE_AA)
-
-            if iSee == True:
-                print(f"Вижу {int(controlXY)}")
-
-            # --- Для отображение на QLabel --- #
             ConvertToQtFormat = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_BGR888)
             Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
             self.ImageUpdate.emit(Pic)
+
             # --- Для отображение на QLabel --- #
 
     # def ContrColor(self):

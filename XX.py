@@ -52,7 +52,7 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.QR_Forward.clicked.connect(self.dFORWARD)
         self.QR_Stop.clicked.connect(self.dSTOP)
         self.QR_Back.clicked.connect(self.dBACKWARD)
-        self.Worker.Run2(self.serialSend)  # По идее должна работать 1 2
+        # self.Worker.Run2(self.serialSend)  # По идее должна работать 1 2
         # self.serialSend(self.Worker.Run2)                 #По идее должна работать 2 1
 
     def onReset(self):
@@ -101,6 +101,8 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.serialSend([1, self.speedSlider.value()])
 
     def dServo(self, val):
+        a = ([2, self.servoSlider.value()])
+        print(a)
         self.serialSend([2, self.servoSlider.value()])
 
     def dFORWARD(self, val):
@@ -113,80 +115,78 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.serialSend([5, int(val)])
 
     def ImageUpdateSlot(self, Image):
-        self.QTcamera.setPixmap(QPixmap.fromImage(Image))
+        if Image is not None:
+            self.QTcamera.setPixmap(QPixmap.fromImage(Image))
+        else:
+            self.QTcamera.setPixmap(QPixmap.fromImage(Image))
 
 
 
 class Worker1(QThread):
     ImageUpdate = pyqtSignal(QImage)
 
+
+
     def __init__(self):
         super().__init__()
         self.ThreadActive = False
+        self.MainMain = CustomMainWindow
 
     def Run2(self, val):
         print("Функция получила значения и начала работать", val)
+        # self.MainMain.serialSend(val)
         return val
+
+    def find_camera(self):
+        # Проверка наличия камеры
+        Capture = cv2.VideoCapture(0)
+        success = Capture.isOpened()
+        Capture.release()
+        print(f"Камера подключена {success}")
+        return success
 
     def run(self):
         self.ThreadActive = True
-        Capture = cv2.VideoCapture(0)
-        if Capture.isOpened():
-            while self.ThreadActive:
-                iSee = False
-                controlXY = 0
-                success, frame = Capture.read()
-                if success:
-                    height, width = frame.shape[0:2]
-                    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-                    binary = cv2.inRange(hsv, (0, 100, 250), (20, 255, 255))
-                    roi = cv2.bitwise_and(frame, frame, mask=binary)
-                    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                    if len(contours) != 0:
-                        maxcont = max(contours, key=cv2.contourArea)
-                        moments = cv2.moments(maxcont)
-                        if moments["m00"] > 20:
-                            cx = int(moments["m10"] / moments["m00"])
-                            cy = int(moments["m01"] / moments["m00"])
-                            iSee = True
-                            controlXY = 100 * (cx - width / 2) / width
-                            controlXY = controlXY * 1
-                            cv2.drawContours(frame, maxcont, -1, (0, 255, 0), 2)
-                            cv2.line(frame, (cx, 0), (cx, height), (0, 0, 255), 6)
-                            cv2.line(frame, (0, cy), (width, cy), (0, 255, 0), 6)
-                    cv2.putText(frame, 'iSee: {};'.format(iSee), (width - 370, height - 10), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.4,
-                                (255, 0, 0), 1, cv2.LINE_AA)
-                    cv2.putText(frame, 'controlX: {:.2f}'.format(controlXY), (width - 200, height - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1, cv2.LINE_AA)
-                    if iSee == True:
-                        val = [2, int(controlXY)]
-                        self.Run2(val)
-                        pass
-                ConvertToQtFormat = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_BGR888)
-                Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
-                self.ImageUpdate.emit(Pic)
-        else:
-            Capture = self.find_camera()
-            while Capture is None:  # Цикл поиска камеры
-                Capture =  self.find_camera()()
-            while self.ThreadActive:  # Начало трансляции после обнаружения камеры
-                success, frame = Capture.read()
-                if success:
-                    height, width = frame.shape[0:2]
-                    # Далее продолжайте обработку изображения как в предыдущем цикле
-
-    def find_camera(self):
-        while True:
-            Capture = cv2.VideoCapture(0)
-            if Capture.isOpened():
-                print("Камера найдена")
-                return Capture
-            else:
-                print("Камера не найдена. Продолжить поиск?")
-                key = cv2.waitKey(0)
-                if key == 27:  # Нажатие клавиши Esc
-                    break
+        camera_found = self.find_camera()
+        while not camera_found and self.ThreadActive:
+            camera_found = self.find_camera()
+        while self.ThreadActive:
+            try:
+                Capture = cv2.VideoCapture(0)
+                while True:
+                    iSee = False
+                    controlXY = 0
+                    success, frame = Capture.read()
+                    if success:
+                        height, width = frame.shape[0:2]
+                        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                        binary = cv2.inRange(hsv, (0, 100, 250), (20, 255, 255))
+                        roi = cv2.bitwise_and(frame, frame, mask=binary)
+                        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                        if len(contours) != 0:
+                            maxcont = max(contours, key=cv2.contourArea)
+                            moments = cv2.moments(maxcont)
+                            if moments["m00"] > 20:
+                                cx = int(moments["m10"] / moments["m00"])
+                                cy = int(moments["m01"] / moments["m00"])
+                                iSee = True
+                                controlXY = 100 * (cx - width / 2) / width
+                                controlXY = controlXY * 1
+                                cv2.drawContours(frame, maxcont, -1, (0, 255, 0), 2)
+                                cv2.line(frame, (cx, 0), (cx, height), (0, 0, 255), 6)
+                                cv2.line(frame, (0, cy), (width, cy), (0, 255, 0), 6)
+                        cv2.putText(frame, 'iSee: {};'.format(iSee), (width - 370, height - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.4,
+                                    (255, 0, 0), 1, cv2.LINE_AA)
+                        cv2.putText(frame, 'controlX: {:.2f}'.format(controlXY), (width - 200, height - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1, cv2.LINE_AA)
+                    ConvertToQtFormat = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_BGR888)
+                    Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
+                    self.ImageUpdate.emit(Pic)
+            except:
+                print("Камера была отключена. Повторный поиск камеры.")
+                while self.ThreadActive:
+                    self.run()
 
 
 def stop(self):
