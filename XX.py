@@ -120,8 +120,8 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Результат этого шага будет строкой вида "элемент1,элемент2,элемент3".
         3. '+' конкатенирует полученную строку с символом ;. Результат будет строкой с добавленным символом ; в конце.
         """
-    # ------------------------------------------------------- #
 
+    # ------------------Методы для обработки и отправки сигналов--------------------------- #
     def ledControl(self, val):
         if val == 2: val = 1;
         self.serialSend([0, val])
@@ -136,6 +136,7 @@ class CustomMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def dBACKWARD(self, val):
         self.serialSend([5, int(val)])
 
+    # ------------------Метод для отправки полученного изображение на Qlabel--------------------------- #
     def ImageUpdateSlot(self, Image):
         if Image is not None:
             self.QTcamera.setPixmap(QPixmap.fromImage(Image))
@@ -148,10 +149,12 @@ class Worker1(QThread):
         super().__init__()
         self.ThreadActive = False
         self.MainMain = CustomMainWindow
-    def Run2(self, val):
-        print("Функция получила значения и начала работать", val)
-        # self.MainMain.serialSend(val)
-        return val
+
+    def SendControlXY(self, val):
+        print("Функция получила значение", val)
+        # self.MainMain.serialSend([2, val])
+        pass
+
     def find_camera(self):
         # Проверка наличия камеры
         Capture = cv2.VideoCapture(0)
@@ -159,6 +162,7 @@ class Worker1(QThread):
         Capture.release()
         print(f"Камера подключена {success}")
         return success
+
     def run(self):
         self.ThreadActive = True
         camera_found = self.find_camera()
@@ -197,6 +201,8 @@ class Worker1(QThread):
                     ConvertToQtFormat = QImage(frame.data, frame.shape[1], frame.shape[0], QImage.Format_BGR888)
                     Pic = ConvertToQtFormat.scaled(800, 600, Qt.KeepAspectRatio)
                     self.ImageUpdate.emit(Pic)
+                    if iSee == True:
+                        self.SendControlXY(int(controlXY))
             except:
                 print("Камера была отключена. Повторный поиск камеры.")
                 while self.ThreadActive:
